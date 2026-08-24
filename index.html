@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecionando...</title>
-  <script src="destino.js"></script>
   <style>
     body {
       margin: 0;
@@ -41,16 +40,30 @@
   </div>
 
   <script>
-    if (typeof DESTINO !== "undefined" && DESTINO) {
-      document.getElementById("link").href = DESTINO;
-      window.location.replace(DESTINO);
-      // Mostra o link manual caso o redirecionamento automático falhe
-      setTimeout(function () {
-        document.getElementById("fallback").style.display = "block";
-      }, 1500);
-    } else {
-      document.body.innerHTML = "<p>Link de destino não configurado.</p>";
-    }
+    // Busca o destino.js sempre "fresco", ignorando qualquer cache do navegador
+    // (o "?v=" com timestamp garante que a URL nunca é igual à anterior)
+    var url = "destino.js?v=" + Date.now();
+
+    fetch(url, { cache: "no-store" })
+      .then(function (res) { return res.text(); })
+      .then(function (texto) {
+        // Extrai o valor de DESTINO do conteúdo do arquivo, sem precisar executá-lo
+        var match = texto.match(/DESTINO\s*=\s*["']([^"']+)["']/);
+        var destino = match ? match[1] : null;
+
+        if (destino) {
+          document.getElementById("link").href = destino;
+          window.location.replace(destino);
+          setTimeout(function () {
+            document.getElementById("fallback").style.display = "block";
+          }, 1500);
+        } else {
+          document.body.innerHTML = "<p>Link de destino não configurado corretamente.</p>";
+        }
+      })
+      .catch(function () {
+        document.body.innerHTML = "<p>Não foi possível carregar o destino. Tente novamente em instantes.</p>";
+      });
   </script>
 </body>
 </html>
