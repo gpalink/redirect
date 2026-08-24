@@ -40,9 +40,10 @@
   </div>
 
   <script>
-    // Busca o destino.js sempre "fresco", ignorando qualquer cache do navegador
-    // (o "?v=" com timestamp garante que a URL nunca é igual à anterior)
-    var url = "destino.js?v=" + Date.now();
+    // Busca o destino.js direto do domínio "raw" do GitHub (cache mais curto
+    // que o GitHub Pages), e o "?v=" com timestamp garante que a URL nunca
+    // é igual à anterior, ignorando qualquer cache do navegador também
+    var url = "https://raw.githubusercontent.com/gpalink/redirect/main/destino.js?v=" + Date.now();
 
     fetch(url, { cache: "no-store" })
       .then(function (res) { return res.text(); })
